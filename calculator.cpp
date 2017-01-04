@@ -2,6 +2,15 @@
 
 Calculator::Calculator()
 {
+     operators.insert( '*' , new Multiplication() );
+     operators.insert( '+' , new Sum() );
+     operators.insert( '-' , new Subtraction() );
+     operators.insert( '/' , new Division() );
+
+     for( auto p : operators )
+     {
+          qDebug() << " " << p->execute(3,3) << "\n";
+     }
 
 }
 
@@ -10,7 +19,7 @@ QString Calculator::getResult( QString line )
     QVector<double> numbers;
     QVector<int> indexs;
     std::priority_queue< std::pair<int,int> > pq;
-    QVector<QChar> operators;
+    QVector<QChar> symbols;
     QString number = "";
     bool valid = true;
     double value;
@@ -25,13 +34,13 @@ QString Calculator::getResult( QString line )
             number = "";
             if( line.at(1) == '+' || line.at(1) == '-' )
             {
-                pq.push( std::make_pair( 1 , - (int)operators.size() ) );
+                pq.push( std::make_pair( 1 , - (int)symbols.size() ) );
             }
             else
             {
-                pq.push( std::make_pair( 2 , - (int)operators.size() ) );
+                pq.push( std::make_pair( 2 , - (int)symbols.size() ) );
             }
-            operators.append( line.at(1) );
+            symbols.append( line.at(1) );
             line.remove(0,3);
         }
         else
@@ -59,7 +68,7 @@ QString Calculator::getResult( QString line )
         numbers.push_back( value );
     }
 
-    if( operators.size() + 1 != numbers.size() )
+    if( symbols.size() + 1 != numbers.size() )
     {
         if( !valid )
         {
@@ -77,7 +86,7 @@ QString Calculator::getResult( QString line )
         std::pair<int,int> operator_now = pq.top(); pq.pop();
         int idx = -operator_now.second;
 
-        if( operators.at( idx ) == '/' && numbers.at( indexs.at( idx+1 ) ) == 0 )
+        if( symbols.at( idx ) == '/' && numbers.at( indexs.at( idx+1 ) ) == 0 )
         {
             line = "Erro!";
             return line;
@@ -86,16 +95,18 @@ QString Calculator::getResult( QString line )
         }
         else
         {
-            qDebug() << "Idx = " << idx << " " << indexs.at(idx) << " Values: " << numbers[ indexs.at(idx) ] << " " << numbers[ indexs.at(idx+1) ] << " " << operators[idx] << "\n";
-            if( operators.at(idx) == '+' )
+qDebug() << "Idx = " << idx << " " << indexs.at(idx) << " Values: " << numbers[ indexs.at(idx) ] << " " << numbers[ indexs.at(idx+1) ] << " " << symbols[idx] << "\n";
+            numbers[ indexs.at(idx) ] = operators[symbols.at(idx)]->execute( numbers[ indexs.at(idx) ] , numbers[ indexs.at(idx+1) ] );
+/*
+ *          if( symbols.at(idx) == '+' )
             {
                 numbers[ indexs.at(idx) ] = numbers[ indexs.at(idx) ] + numbers[ indexs.at(idx+1) ];
             }
-            else if( operators.at(idx) == '-' )
+            else if( symbols.at(idx) == '-' )
             {
                 numbers[ indexs.at(idx) ] = numbers[ indexs.at(idx) ] - numbers[ indexs.at(idx+1) ];
             }
-            else if( operators.at(idx) == '*' )
+            else if( symbols.at(idx) == '*' )
             {
                 numbers[ indexs.at(idx) ] = numbers[ indexs.at(idx) ] * numbers[ indexs.at(idx+1) ];
             }
@@ -103,6 +114,7 @@ QString Calculator::getResult( QString line )
             {
                 numbers[ indexs.at(idx) ] = numbers[ indexs.at(idx) ] / numbers[ indexs.at(idx+1) ];
             }
+*/
             numbers.removeAt( indexs.at(idx+1) );
             for( int i = idx+1 ; i < indexs.size() ; ++i )
                 --indexs[i];

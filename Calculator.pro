@@ -14,9 +14,19 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    calculator.cpp
+    calculator.cpp \
+    sum.cpp \
+    operator.cpp \
+    multiplication.cpp \
+    division.cpp \
+    subtraction.cpp
 
 HEADERS  += mainwindow.h \
-    calculator.h
+    calculator.h \
+    sum.h \
+    operator.h \
+    multiplication.h \
+    division.h \
+    subtraction.h
 
 FORMS    += mainwindow.ui
